@@ -31,11 +31,11 @@
     <div id="console">Esperando datos del sensor...<br></div>
 
     <div class="controls">
-        <div style="grid-column: 2"><button onclick="enviar('Y')">▲</button></div>
-        <button style="grid-row: 2; grid-column: 1" onclick="enviar('X')">◀</button>
+        <div style="grid-column: 2"><button onclick="enviar('A')">▲</button></div>
+        <button style="grid-row: 2; grid-column: 1" onclick="enviar('B')">◀</button>
         <button id="btn-stop" style="grid-row: 2; grid-column: 2" onclick="enviar('OK')">■</button>
-        <button style="grid-row: 2; grid-column: 3" onclick="enviar('B')">▶</button>
-        <div style="grid-column: 2; grid-row: 3"><button onclick="enviar('A')">▼</button></div>
+        <button style="grid-row: 2; grid-column: 3" onclick="enviar('X')">▶</button>
+        <div style="grid-column: 2; grid-row: 3"><button onclick="enviar('Y')">▼</button></div>
     </div>
 
     <script>
