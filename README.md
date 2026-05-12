@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control ATOM + Consola</title>
+    <title>Control ATOM + Sensores</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #1a1a1a; color: white; margin: 0; padding: 20px; }
         .status { margin: 10px; padding: 10px; border-radius: 5px; background: #333; width: 80%; text-align: center; }
         
-        /* Estilo de la Consola */
         #console {
-            width: 90%; height: 250px; background: black; color: #00ff00;
+            width: 90%; height: 300px; background: black; color: #00ff00;
             font-family: monospace; font-size: 0.9rem; overflow-y: auto;
             border: 2px solid #444; padding: 10px; margin-bottom: 20px; border-radius: 5px;
         }
@@ -24,11 +23,11 @@
 </head>
 <body>
 
-    <h2>ATOM Monitor + Control</h2>
+    <h2>ATOM Terminal Monitor</h2>
     <div id="status" class="status">Estado: Desconectado</div>
     <button class="btn-conn" onclick="conectarBLE()">CONECTAR ROBOT</button>
 
-    <div id="console">Esperando conexión...<br></div>
+    <div id="console">Esperando datos...<br></div>
 
     <div class="controls">
         <div style="grid-column: 2"><button onclick="enviar('A')">▲</button></div>
@@ -47,7 +46,16 @@
         const consoleDiv = document.getElementById('console');
 
         function log(msg) {
-            consoleDiv.innerHTML += msg + "<br>";
+            // Lógica para traducir los datos de los sensores IR
+            let formattedMsg = msg;
+            
+            if (msg.includes("IR_IZQ:1")) formattedMsg = " > Izquierdo: NEGRO (1)";
+            else if (msg.includes("IR_IZQ:0")) formattedMsg = " > Izquierdo: BLANCO (0)";
+            
+            if (msg.includes("IR_DER:1")) formattedMsg = " > Derecho: NEGRO (1)";
+            else if (msg.includes("IR_DER:0")) formattedMsg = " > Derecho: BLANCO (0)";
+
+            consoleDiv.innerHTML += formattedMsg + "<br>";
             consoleDiv.scrollTop = consoleDiv.scrollHeight;
         }
 
@@ -60,19 +68,16 @@
 
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService(UART_SERVICE_UUID);
-                
                 caracteristicaRX = await service.getCharacteristic(RX_CHAR_UUID);
                 
                 const charTX = await service.getCharacteristic(TX_CHAR_UUID);
                 await charTX.startNotifications();
                 charTX.addEventListener('characteristicvaluechanged', (event) => {
                     const value = new TextDecoder().decode(event.target.value);
-                    log("> " + value); // Los datos de los sensores se seguirán viendo aquí en texto
+                    log(value.trim());
                 });
 
                 document.getElementById('status').innerText = "Conectado a ATOM";
-                log("Sistema listo.");
-
             } catch (e) { log("Error: " + e); }
         }
 
