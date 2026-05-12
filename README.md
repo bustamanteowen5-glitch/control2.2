@@ -1,9 +1,8 @@
-
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control ATOM + Consola + Sensores IR</title>
+    <title>Control ATOM + Consola + Sensores Ultrasónicos</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #1a1a1a; color: white; margin: 0; padding: 20px; }
         .status { margin: 10px; padding: 10px; border-radius: 5px; background: #333; width: 80%; text-align: center; }
@@ -39,21 +38,23 @@
 </head>
 <body>
 
-    <h2>ATOM Monitor + Sensores IR</h2>
+    <h2>ATOM Monitor + Sensores Ultrasónicos</h2>
     <div id="status" class="status">Estado: Desconectado</div>
     <button class="btn-conn" onclick="conectarBLE()">CONECTAR ROBOT</button>
 
     <div id="console">Esperando datos del sensor...<br></div>
 
-    <!-- Sensores Infrarojos -->
+    <!-- Sensores Ultrasónicos -->
     <div class="sensors-container">
         <div class="sensor">
-            <h3>Sensor Izquierdo (GPIO 16)</h3>
+            <h3>Sensor Ultrasónico (GPIO 16)</h3>
             <div class="sensor-value" id="sensorIzq">-</div>
+            <p style="margin: 5px 0; font-size: 0.9rem;">Distancia (cm)</p>
         </div>
         <div class="sensor">
-            <h3>Sensor Derecho (GPIO 17)</h3>
+            <h3>Sensor Ultrasónico (GPIO 13)</h3>
             <div class="sensor-value" id="sensorDer">-</div>
+            <p style="margin: 5px 0; font-size: 0.9rem;">Distancia (cm)</p>
         </div>
     </div>
 
@@ -79,20 +80,20 @@
         }
 
         function procesarDatos(value) {
-            // Buscar formato: "IR_IZQ:x,IR_DER:y"
-            const matchIzq = value.match(/IR_IZQ:(\d+)/);
-            const matchDer = value.match(/IR_DER:(\d+)/);
+            // Buscar formato: "USONIC_GPIO16:x,USONIC_GPIO13:y"
+            const matchGpio16 = value.match(/USONIC_GPIO16:(\d+(?:\.\d+)?)/);
+            const matchGpio13 = value.match(/USONIC_GPIO13:(\d+(?:\.\d+)?)/);
 
-            if (matchIzq) {
-                const valIzq = parseInt(matchIzq[1]);
-                document.getElementById('sensorIzq').textContent = valIzq;
-                document.getElementById('sensorIzq').parentElement.classList.toggle('active', valIzq > 500);
+            if (matchGpio16) {
+                const valGpio16 = parseFloat(matchGpio16[1]);
+                document.getElementById('sensorIzq').textContent = valGpio16.toFixed(1);
+                document.getElementById('sensorIzq').parentElement.classList.toggle('active', valGpio16 < 20);
             }
 
-            if (matchDer) {
-                const valDer = parseInt(matchDer[1]);
-                document.getElementById('sensorDer').textContent = valDer;
-                document.getElementById('sensorDer').parentElement.classList.toggle('active', valDer > 500);
+            if (matchGpio13) {
+                const valGpio13 = parseFloat(matchGpio13[1]);
+                document.getElementById('sensorDer').textContent = valGpio13.toFixed(1);
+                document.getElementById('sensorDer').parentElement.classList.toggle('active', valGpio13 < 20);
             }
         }
 
@@ -119,7 +120,7 @@
                 });
 
                 document.getElementById('status').innerText = "Conectado a ATOM";
-                log("Sistema listo. Leyendo sensores IR...");
+                log("Sistema listo. Leyendo sensores ultrasónicos...");
 
             } catch (e) { log("Error: " + e); }
         }
