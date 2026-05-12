@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control ATOM + Consola + Sensores Ultrasónicos</title>
+    <title>Control ATOM + Consola + Sensores Infrarojos</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #1a1a1a; color: white; margin: 0; padding: 20px; }
         .status { margin: 10px; padding: 10px; border-radius: 5px; background: #333; width: 80%; text-align: center; }
@@ -27,7 +27,8 @@
             font-size: 2rem; font-weight: bold; color: #00ff00;
             font-family: monospace;
         }
-        .sensor.active { border-color: #00ff88; background: #1a3a1a; }
+        .sensor.active-black { border-color: #ff6b6b; background: #2a1a1a; }
+        .sensor.active-white { border-color: #00ff88; background: #1a3a1a; }
 
         .controls { display: grid; grid-template-columns: repeat(3, 80px); gap: 15px; }
         button { width: 80px; height: 80px; border: none; border-radius: 15px; background: #4a4a4a; color: white; font-size: 1.5rem; cursor: pointer; }
@@ -38,23 +39,23 @@
 </head>
 <body>
 
-    <h2>ATOM Monitor + Sensores Ultrasónicos</h2>
+    <h2>ATOM Monitor + Sensores Infrarojos</h2>
     <div id="status" class="status">Estado: Desconectado</div>
     <button class="btn-conn" onclick="conectarBLE()">CONECTAR ROBOT</button>
 
-    <div id="console">Esperando datos del sensor...<br></div>
+    <div id="console">Esperando datos de los sensores infrarojos...<br></div>
 
-    <!-- Sensores Ultrasónicos -->
+    <!-- Sensores Infrarojos -->
     <div class="sensors-container">
         <div class="sensor">
-            <h3>Sensor Ultrasónico (GPIO 16)</h3>
+            <h3>Sensor Infrarrojo Izquierdo</h3>
             <div class="sensor-value" id="sensorIzq">-</div>
-            <p style="margin: 5px 0; font-size: 0.9rem;">Distancia (cm)</p>
+            <p style="margin: 5px 0; font-size: 0.9rem;">0=Blanco | 1=Negro</p>
         </div>
         <div class="sensor">
-            <h3>Sensor Ultrasónico (GPIO 13)</h3>
+            <h3>Sensor Infrarrojo Derecho</h3>
             <div class="sensor-value" id="sensorDer">-</div>
-            <p style="margin: 5px 0; font-size: 0.9rem;">Distancia (cm)</p>
+            <p style="margin: 5px 0; font-size: 0.9rem;">0=Blanco | 1=Negro</p>
         </div>
     </div>
 
@@ -80,20 +81,34 @@
         }
 
         function procesarDatos(value) {
-            // Buscar formato: "USONIC_GPIO16:x,USONIC_GPIO13:y"
-            const matchGpio16 = value.match(/USONIC_GPIO16:(\d+(?:\.\d+)?)/);
-            const matchGpio13 = value.match(/USONIC_GPIO13:(\d+(?:\.\d+)?)/);
+            // Buscar formato: "IR_IZQUIERDO:x,IR_DERECHO:y" donde x,y son 0 o 1
+            const matchIzq = value.match(/IR_IZQUIERDO:([01])/);
+            const matchDer = value.match(/IR_DERECHO:([01])/);
 
-            if (matchGpio16) {
-                const valGpio16 = parseFloat(matchGpio16[1]);
-                document.getElementById('sensorIzq').textContent = valGpio16.toFixed(1);
-                document.getElementById('sensorIzq').parentElement.classList.toggle('active', valGpio16 < 20);
+            if (matchIzq) {
+                const valIzq = parseInt(matchIzq[1]);
+                const labelIzq = valIzq === 1 ? "Negro" : "Blanco";
+                document.getElementById('sensorIzq').textContent = valIzq;
+                document.getElementById('sensorIzq').parentElement.classList.remove('active-black', 'active-white');
+                if (valIzq === 1) {
+                    document.getElementById('sensorIzq').parentElement.classList.add('active-black');
+                } else {
+                    document.getElementById('sensorIzq').parentElement.classList.add('active-white');
+                }
+                log("🔵 Izquierdo: " + valIzq + " (" + labelIzq + ")");
             }
 
-            if (matchGpio13) {
-                const valGpio13 = parseFloat(matchGpio13[1]);
-                document.getElementById('sensorDer').textContent = valGpio13.toFixed(1);
-                document.getElementById('sensorDer').parentElement.classList.toggle('active', valGpio13 < 20);
+            if (matchDer) {
+                const valDer = parseInt(matchDer[1]);
+                const labelDer = valDer === 1 ? "Negro" : "Blanco";
+                document.getElementById('sensorDer').textContent = valDer;
+                document.getElementById('sensorDer').parentElement.classList.remove('active-black', 'active-white');
+                if (valDer === 1) {
+                    document.getElementById('sensorDer').parentElement.classList.add('active-black');
+                } else {
+                    document.getElementById('sensorDer').parentElement.classList.add('active-white');
+                }
+                log("🔴 Derecho: " + valDer + " (" + labelDer + ")");
             }
         }
 
@@ -110,7 +125,7 @@
                 // Característica para enviar comandos
                 caracteristicaRX = await service.getCharacteristic(RX_CHAR_UUID);
                 
-                // Característica para recibir datos (Sensor)
+                // Característica para recibir datos (Sensores)
                 const charTX = await service.getCharacteristic(TX_CHAR_UUID);
                 await charTX.startNotifications();
                 charTX.addEventListener('characteristicvaluechanged', (event) => {
@@ -120,7 +135,7 @@
                 });
 
                 document.getElementById('status').innerText = "Conectado a ATOM";
-                log("Sistema listo. Leyendo sensores ultrasónicos...");
+                log("Sistema listo. Leyendo sensores infrarojos...");
 
             } catch (e) { log("Error: " + e); }
         }
