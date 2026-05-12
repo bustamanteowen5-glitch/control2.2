@@ -1,35 +1,19 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control ATOM + Consola + Sensores Infrarojos + Ultrasónico</title>
+    <title>Control ATOM + Consola</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #1a1a1a; color: white; margin: 0; padding: 20px; }
         .status { margin: 10px; padding: 10px; border-radius: 5px; background: #333; width: 80%; text-align: center; }
         
         /* Estilo de la Consola */
         #console {
-            width: 90%; height: 200px; background: black; color: #00ff00;
+            width: 90%; height: 250px; background: black; color: #00ff00;
             font-family: monospace; font-size: 0.9rem; overflow-y: auto;
             border: 2px solid #444; padding: 10px; margin-bottom: 20px; border-radius: 5px;
         }
-
-        /* Estilo de sensores */
-        .sensors-container {
-            display: flex; gap: 20px; margin-bottom: 20px; width: 90%; flex-wrap: wrap;
-        }
-        .sensor {
-            flex: 1; padding: 15px; background: #333; border-radius: 10px; text-align: center;
-            border: 2px solid #444; min-width: 200px;
-        }
-        .sensor h3 { margin: 0 0 10px 0; }
-        .sensor-value {
-            font-size: 2rem; font-weight: bold; color: #00ff00;
-            font-family: monospace;
-        }
-        .sensor.active-black { border-color: #ff6b6b; background: #2a1a1a; }
-        .sensor.active-white { border-color: #00ff88; background: #1a3a1a; }
-        .sensor.ultrasonic { border-color: #ffd700; background: #2a2a1a; }
 
         .controls { display: grid; grid-template-columns: repeat(3, 80px); gap: 15px; }
         button { width: 80px; height: 80px; border: none; border-radius: 15px; background: #4a4a4a; color: white; font-size: 1.5rem; cursor: pointer; }
@@ -40,30 +24,11 @@
 </head>
 <body>
 
-    <h2>ATOM Monitor + Sensores Infrarojos + Ultrasónico</h2>
+    <h2>ATOM Monitor + Control</h2>
     <div id="status" class="status">Estado: Desconectado</div>
     <button class="btn-conn" onclick="conectarBLE()">CONECTAR ROBOT</button>
 
-    <div id="console">Esperando datos de los sensores...<br></div>
-
-    <!-- Sensores Infrarojos y Ultrasónico -->
-    <div class="sensors-container">
-        <div class="sensor">
-            <h3>Sensor Infrarrojo Izquierdo</h3>
-            <div class="sensor-value" id="sensorIzq">-</div>
-            <p style="margin: 5px 0; font-size: 0.9rem;">0=Blanco | 1=Negro</p>
-        </div>
-        <div class="sensor">
-            <h3>Sensor Infrarrojo Derecho</h3>
-            <div class="sensor-value" id="sensorDer">-</div>
-            <p style="margin: 5px 0; font-size: 0.9rem;">0=Blanco | 1=Negro</p>
-        </div>
-        <div class="sensor ultrasonic">
-            <h3>Sensor Ultrasónico</h3>
-            <div class="sensor-value" id="sensorUltrasonic">-</div>
-            <p style="margin: 5px 0; font-size: 0.9rem;">Distancia (cm)</p>
-        </div>
-    </div>
+    <div id="console">Esperando conexión...<br></div>
 
     <div class="controls">
         <div style="grid-column: 2"><button onclick="enviar('A')">▲</button></div>
@@ -75,8 +40,8 @@
 
     <script>
         const UART_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dc0000";
-        const RX_CHAR_UUID = "6e400002-b5a3-f393-e0a9-e50e24dc0000"; // Enviar al ESP32
-        const TX_CHAR_UUID = "6e400003-b5a3-f393-e0a9-e50e24dc0000"; // Recibir del ESP32
+        const RX_CHAR_UUID = "6e400002-b5a3-f393-e0a9-e50e24dc0000"; 
+        const TX_CHAR_UUID = "6e400003-b5a3-f393-e0a9-e50e24dc0000"; 
 
         let caracteristicaRX;
         const consoleDiv = document.getElementById('console');
@@ -84,47 +49,6 @@
         function log(msg) {
             consoleDiv.innerHTML += msg + "<br>";
             consoleDiv.scrollTop = consoleDiv.scrollHeight;
-        }
-
-        function procesarDatos(value) {
-            // Buscar formato: "IR_IZQUIERDO:x,IR_DERECHO:y" donde x,y son 0 o 1
-            const matchIzq = value.match(/IR_IZQUIERDO:([01])/);
-            const matchDer = value.match(/IR_DERECHO:([01])/);
-            
-            // Buscar formato: "ULTRASONIC:distancia" donde distancia es un número
-            const matchUltrasonic = value.match(/ULTRASONIC:(\d+(?:\.\d+)?)/);
-
-            if (matchIzq) {
-                const valIzq = parseInt(matchIzq[1]);
-                const labelIzq = valIzq === 1 ? "Negro" : "Blanco";
-                document.getElementById('sensorIzq').textContent = valIzq;
-                document.getElementById('sensorIzq').parentElement.classList.remove('active-black', 'active-white');
-                if (valIzq === 1) {
-                    document.getElementById('sensorIzq').parentElement.classList.add('active-black');
-                } else {
-                    document.getElementById('sensorIzq').parentElement.classList.add('active-white');
-                }
-                log("🔵 IR Izquierdo: " + valIzq + " (" + labelIzq + ")");
-            }
-
-            if (matchDer) {
-                const valDer = parseInt(matchDer[1]);
-                const labelDer = valDer === 1 ? "Negro" : "Blanco";
-                document.getElementById('sensorDer').textContent = valDer;
-                document.getElementById('sensorDer').parentElement.classList.remove('active-black', 'active-white');
-                if (valDer === 1) {
-                    document.getElementById('sensorDer').parentElement.classList.add('active-black');
-                } else {
-                    document.getElementById('sensorDer').parentElement.classList.add('active-white');
-                }
-                log("🔴 IR Derecho: " + valDer + " (" + labelDer + ")");
-            }
-
-            if (matchUltrasonic) {
-                const distancia = parseFloat(matchUltrasonic[1]).toFixed(1);
-                document.getElementById('sensorUltrasonic').textContent = distancia;
-                log("📏 Ultrasónico: " + distancia + " cm");
-            }
         }
 
         async function conectarBLE() {
@@ -137,20 +61,17 @@
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService(UART_SERVICE_UUID);
                 
-                // Característica para enviar comandos
                 caracteristicaRX = await service.getCharacteristic(RX_CHAR_UUID);
                 
-                // Característica para recibir datos (Sensores)
                 const charTX = await service.getCharacteristic(TX_CHAR_UUID);
                 await charTX.startNotifications();
                 charTX.addEventListener('characteristicvaluechanged', (event) => {
                     const value = new TextDecoder().decode(event.target.value);
-                    log("> " + value);
-                    procesarDatos(value);
+                    log("> " + value); // Los datos de los sensores se seguirán viendo aquí en texto
                 });
 
                 document.getElementById('status').innerText = "Conectado a ATOM";
-                log("Sistema listo. Leyendo sensores...");
+                log("Sistema listo.");
 
             } catch (e) { log("Error: " + e); }
         }
