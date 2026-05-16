@@ -1,43 +1,51 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATOM Terminal Monitor - Full</title>
-    <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #1a1a1a; color: white; margin: 0; padding: 20px; }
-        .status { margin: 10px; padding: 10px; border-radius: 5px; background: #333; width: 90%; text-align: center; font-weight: bold; }
-        
-        /* Consola optimizada */
-        #console {
-            width: 90%; height: 350px; background: black; color: #00ff00;
-            font-family: 'Courier New', monospace; font-size: 1rem; overflow-y: auto;
-            border: 2px solid #444; padding: 15px; margin-bottom: 20px; border-radius: 8px;
-            box-shadow: inset 0 0 10px #000;
-        }
-
-        .controls { display: grid; grid-template-columns: repeat(3, 85px); gap: 15px; }
-        button { width: 85px; height: 85px; border: none; border-radius: 15px; background: #4a4a4a; color: white; font-size: 1.8rem; cursor: pointer; transition: 0.2s; }
-        button:active { background: #00ff88; color: black; transform: scale(0.9); }
-        .btn-conn { width: 90%; height: 55px; background: #007bff; margin-bottom: 20px; border-radius: 10px; color: white; border: none; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
-        #btn-stop { background: #dc3545; }
-        h2 { margin-bottom: 5px; color: #007bff; }
-    </style>
+    <title>Control ATOM</title>
 </head>
 <body>
+    <!-- Se asume la existencia de las etiquetas previas de estructura como #status, #console, etc. -->
 
-    <h2>ATOM MONITOR</h2>
-    <div id="status" class="status">ESTADO: DESCONECTADO</div>
-    <button class="btn-conn" onclick="conectarBLE()">CONECTAR ROBOT VIA BLUETOOTH</button>
+    <!-- CONTROLES DE MOVIMIENTO -->
+    <div style="display: grid; width: 200px; height: 200px; margin: 20px auto;">
+        <!-- Botón Adelante -->
+        <div style="grid-column: 2; grid-row: 1;">
+            <button 
+                onmousedown="enviarComando('Y')" 
+                onmouseup="enviarComando('OK')" 
+                onmouseleave="enviarComando('OK')"
+                ontouchstart="event.preventDefault(); enviarComando('Y')" 
+                ontouchend="event.preventDefault(); enviarComando('OK')">▲</button>
+        </div>
 
-    <div id="console">Sistema listo. Esperando conexión...<br></div>
+        <!-- Botón Izquierda -->
+        <button style="grid-row: 2; grid-column: 1" 
+                onmousedown="enviarComando('A')" 
+                onmouseup="enviarComando('OK')" 
+                onmouseleave="enviarComando('OK')"
+                ontouchstart="event.preventDefault(); enviarComando('A')" 
+                ontouchend="event.preventDefault(); enviarComando('OK')">◀</button>
 
-    <div class="controls">
-        <div style="grid-column: 2"><button onclick="enviarComando('A')">▲</button></div>
-        <button style="grid-row: 2; grid-column: 1" onclick="enviarComando('B')">◀</button>
+        <!-- Botón Stop (Opcional por seguridad) -->
         <button id="btn-stop" style="grid-row: 2; grid-column: 2" onclick="enviarComando('OK')">■</button>
-        <button style="grid-row: 2; grid-column: 3" onclick="enviarComando('X')">▶</button>
-        <div style="grid-column: 2; grid-row: 3"><button onclick="enviarComando('Y')">▼</button></div>
+
+        <!-- Botón Derecha -->
+        <button style="grid-row: 2; grid-column: 3" 
+                onmousedown="enviarComando('B')" 
+                onmouseup="enviarComando('OK')" 
+                onmouseleave="enviarComando('OK')"
+                ontouchstart="event.preventDefault(); enviarComando('B')" 
+                ontouchend="event.preventDefault(); enviarComando('OK')">▶</button>
+
+        <!-- Botón Atrás -->
+        <div style="grid-column: 2; grid-row: 3">
+            <button 
+                onmousedown="enviarComando('X')" 
+                onmouseup="enviarComando('OK')" 
+                onmouseleave="enviarComando('OK')"
+                ontouchstart="event.preventDefault(); enviarComando('X')" 
+                ontouchend="event.preventDefault(); enviarComando('OK')">▼</button>
+        </div>
     </div>
 
     <script>
@@ -52,12 +60,11 @@
             let cleanMsg = msg.trim();
             if (!cleanMsg) return;
 
-            // Agregamos el prefijo de terminal ">"
             const newLine = document.createElement("div");
             newLine.textContent = "> " + cleanMsg;
             
-            // Si es un dato de sensor, le damos un toque de color diferente si prefieres
-            if (cleanMsg.includes("IR Izq")) {
+            // Actualizado para detectar la cadena del nuevo formato de MicroPython
+            if (cleanMsg.includes("IR_IZQ")) {
                 newLine.style.color = "#88ff88"; 
             }
 
@@ -101,7 +108,7 @@
                     logToConsole("Error al enviar: " + e);
                 }
             } else {
-                alert("Primero debes conectar el robot");
+                console.log("Primero debes conectar el robot");
             }
         }
     </script>
