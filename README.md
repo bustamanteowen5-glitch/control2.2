@@ -4,46 +4,27 @@
     <title>Control ATOM</title>
 </head>
 <body>
-    <!-- Se asume la existencia de las etiquetas previas de estructura como #status, #console, etc. -->
 
-    <!-- CONTROLES DE MOVIMIENTO -->
+    <!-- CONTROLES MANTENIENDO TU DISEÑO ORIGINAL -->
     <div style="display: grid; width: 200px; height: 200px; margin: 20px auto;">
-        <!-- Botón Adelante -->
-        <div style="grid-column: 2; grid-row: 1;">
+        <!-- Botón Stop -->
+        <button id="btn-stop" style="grid-row: 2; grid-column: 2" onclick="enviarComando('OK')">■</button>
+        
+        <!-- Botón Derecha (X) -->
+        <button style="grid-row: 2; grid-column: 3" 
+                onmousedown="enviarComando('X')" 
+                onmouseup="enviarComando('OK')" 
+                onmouseleave="enviarComando('OK')"
+                ontouchstart="event.preventDefault(); enviarComando('X')" 
+                ontouchend="event.preventDefault(); enviarComando('OK')">▶</button>
+        
+        <!-- Botón Abajo/Atrás (Y) -->
+        <div style="grid-column: 2; grid-row: 3">
             <button 
                 onmousedown="enviarComando('Y')" 
                 onmouseup="enviarComando('OK')" 
                 onmouseleave="enviarComando('OK')"
                 ontouchstart="event.preventDefault(); enviarComando('Y')" 
-                ontouchend="event.preventDefault(); enviarComando('OK')">▲</button>
-        </div>
-
-        <!-- Botón Izquierda -->
-        <button style="grid-row: 2; grid-column: 1" 
-                onmousedown="enviarComando('A')" 
-                onmouseup="enviarComando('OK')" 
-                onmouseleave="enviarComando('OK')"
-                ontouchstart="event.preventDefault(); enviarComando('A')" 
-                ontouchend="event.preventDefault(); enviarComando('OK')">◀</button>
-
-        <!-- Botón Stop (Opcional por seguridad) -->
-        <button id="btn-stop" style="grid-row: 2; grid-column: 2" onclick="enviarComando('OK')">■</button>
-
-        <!-- Botón Derecha -->
-        <button style="grid-row: 2; grid-column: 3" 
-                onmousedown="enviarComando('B')" 
-                onmouseup="enviarComando('OK')" 
-                onmouseleave="enviarComando('OK')"
-                ontouchstart="event.preventDefault(); enviarComando('B')" 
-                ontouchend="event.preventDefault(); enviarComando('OK')">▶</button>
-
-        <!-- Botón Atrás -->
-        <div style="grid-column: 2; grid-row: 3">
-            <button 
-                onmousedown="enviarComando('X')" 
-                onmouseup="enviarComando('OK')" 
-                onmouseleave="enviarComando('OK')"
-                ontouchstart="event.preventDefault(); enviarComando('X')" 
                 ontouchend="event.preventDefault(); enviarComando('OK')">▼</button>
         </div>
     </div>
@@ -63,7 +44,7 @@
             const newLine = document.createElement("div");
             newLine.textContent = "> " + cleanMsg;
             
-            // Actualizado para detectar la cadena del nuevo formato de MicroPython
+            // Filtro actualizado para el nuevo formato de telemetría del ESP32
             if (cleanMsg.includes("IR_IZQ")) {
                 newLine.style.color = "#88ff88"; 
             }
