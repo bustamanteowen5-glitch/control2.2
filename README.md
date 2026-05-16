@@ -62,18 +62,18 @@
         
         <!-- Arriba -->
         <button style="grid-row: 1; grid-column: 2; font-size: 24px;" 
-                onmousedown="enviarComando('W')" 
+                onmousedown="enviarComando('Y')" 
                 onmouseup="enviarComando('OK')" 
                 onmouseleave="enviarComando('OK')"
-                ontouchstart="event.preventDefault(); enviarComando('W')" 
+                ontouchstart="event.preventDefault(); enviarComando('Y')" 
                 ontouchend="event.preventDefault(); enviarComando('OK')">▲</button>
 
         <!-- Izquierda -->
         <button style="grid-row: 2; grid-column: 1; font-size: 24px;"
-                onmousedown="enviarComando('A')" 
+                onmousedown="enviarComando('x')" 
                 onmouseup="enviarComando('OK')" 
                 onmouseleave="enviarComando('OK')"
-                ontouchstart="event.preventDefault(); enviarComando('A')" 
+                ontouchstart="event.preventDefault(); enviarComando('x')" 
                 ontouchend="event.preventDefault(); enviarComando('OK')">◀</button>
 
         <!-- Centro (STOP) -->
@@ -81,18 +81,18 @@
 
         <!-- Derecha -->
         <button style="grid-row: 2; grid-column: 3; font-size: 24px;" 
-                onmousedown="enviarComando('X')" 
+                onmousedown="enviarComando('B')" 
                 onmouseup="enviarComando('OK')" 
                 onmouseleave="enviarComando('OK')"
-                ontouchstart="event.preventDefault(); enviarComando('X')" 
+                ontouchstart="event.preventDefault(); enviarComando('B')" 
                 ontouchend="event.preventDefault(); enviarComando('OK')">▶</button>
 
         <!-- Abajo -->
         <button style="grid-row: 3; grid-column: 2; font-size: 24px;"
-                onmousedown="enviarComando('Y')" 
+                onmousedown="enviarComando('A')" 
                 onmouseup="enviarComando('OK')" 
                 onmouseleave="enviarComando('OK')"
-                ontouchstart="event.preventDefault(); enviarComando('Y')" 
+                ontouchstart="event.preventDefault(); enviarComando('A')" 
                 ontouchend="event.preventDefault(); enviarComando('OK')">▼</button>
     </div>
 
@@ -141,7 +141,7 @@
                     logToConsole(value);
                 });
 
-                document.getElementById('status').innerText = "ESTADO: CONECTADO A ATOM ✅";
+                document.getElementById('status').innerText = "ESTADO: CONECTADO A ATOM ";
                 document.getElementById('status').style.color = "#00ff88";
                 logToConsole("¡Conexión Exitosa!");
 
