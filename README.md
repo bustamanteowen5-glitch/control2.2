@@ -1,17 +1,30 @@
 <html lang="es">
 <body>
-    <div style="display: grid; width: 200px; height: 200px; margin: 20px auto;">
+    <div style="display: grid; width: 200px; height: 200px; margin: 20px auto; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);">
         
         <button id="btn-stop" style="grid-row: 2; grid-column: 2" onclick="enviarComando('OK')">■</button>
 
-        <button style="grid-row: 2; grid-column: 3" onclick="enviarComando('X')">▶</button>
+        <button style="grid-row: 2; grid-column: 3" 
+                onmousedown="enviarComando('X')" 
+                onmouseup="enviarComando('OK')" 
+                onmouseleave="enviarComando('OK')"
+                ontouchstart="event.preventDefault(); enviarComando('X')" 
+                ontouchend="event.preventDefault(); enviarComando('OK')">▶</button>
 
         <div style="grid-column: 2; grid-row: 3">
-            <button onclick="enviarComando('Y')">▼</button>
+            <button style="width: 100%; height: 100%;"
+                onmousedown="enviarComando('Y')" 
+                onmouseup="enviarComando('OK')" 
+                onmouseleave="enviarComando('OK')"
+                ontouchstart="event.preventDefault(); enviarComando('Y')" 
+                ontouchend="event.preventDefault(); enviarComando('OK')">▼</button>
         </div>
 
     </div>
 
+    <div style="text-align: center; margin-bottom: 10px;">
+        <button onclick="conectarBLE()" style="padding: 10px; cursor: pointer;">CONECTAR ATOM</button>
+    </div>
     <div id="status" style="text-align: center; font-weight: bold; margin-bottom: 10px;">ESTADO: DESCONECTADO</div>
     <div id="console" style="width: 300px; height: 200px; background-color: #1e1e1e; color: #ffffff; font-family: monospace; padding: 10px; margin: 0 auto; overflow-y: auto; border-radius: 5px;"></div>
 
@@ -27,12 +40,11 @@
             let cleanMsg = msg.trim();
             if (!cleanMsg) return;
 
-            // Agregamos el prefijo de terminal ">"
             const newLine = document.createElement("div");
             newLine.textContent = "> " + cleanMsg;
             
-            // Si es un dato de sensor, le damos un toque de color diferente
-            if (cleanMsg.includes("IR Izq")) {
+            // Color para telemetría (ajustado al nuevo formato del ESP32)
+            if (cleanMsg.includes("IR_IZQ") || cleanMsg.includes("Dist")) {
                 newLine.style.color = "#88ff88"; 
             }
 
@@ -71,11 +83,12 @@
         async function enviarComando(letra) {
             if (caracteristicaRX) {
                 try {
+                    // Usamos writeValueWithoutResponse para mayor velocidad en movimientos continuos
                     await caracteristicaRX.writeValue(new TextEncoder().encode(letra));
                 } catch (e) {
-                    logToConsole("Error al enviar: " + e);
+                    console.log("Error al enviar: " + e);
                 }
-            } else {
+            } else if (letra !== 'OK') {
                 alert("Primero debes conectar el robot");
             }
         }
