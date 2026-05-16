@@ -45,11 +45,11 @@
     </style>
 </head>
 <body>
-    <h1>🤖 CONTROL ROBOT ATOM</h1>
+    <h1> CONTROL ROBOT ATOM</h1>
     
     <div style="margin-top: 20px;">
         <button onclick="conectarBLE()" style="padding: 15px 30px; font-size: 18px; width: 200px;">
-            🔌 CONECTAR ROBOT ATOM
+              CONECTAR ROBOT ATOM
         </button>
     </div>
 
