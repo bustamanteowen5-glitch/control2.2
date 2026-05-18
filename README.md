@@ -57,7 +57,7 @@
         ESTADO: DESCONECTADO
     </div>
 
-    <h2>Control D-Pad</h2>
+    <h2>Control</h2>
     <div style="display: grid; width: 220px; height: 220px; margin: 20px auto; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 5px;">
         
         <!-- Arriba -->
