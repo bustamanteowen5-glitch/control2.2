@@ -70,10 +70,10 @@
 
         <!-- Izquierda -->
         <button style="grid-row: 2; grid-column: 1; font-size: 24px;"
-                onmousedown="enviarComando('X')" 
+                onmousedown="enviarComando('B')" 
                 onmouseup="enviarComando('OK')" 
                 onmouseleave="enviarComando('OK')"
-                ontouchstart="event.preventDefault(); enviarComando('X')" 
+                ontouchstart="event.preventDefault(); enviarComando('B')" 
                 ontouchend="event.preventDefault(); enviarComando('OK')">◀</button>
 
         <!-- Centro (STOP) -->
@@ -81,10 +81,10 @@
 
         <!-- Derecha -->
         <button style="grid-row: 2; grid-column: 3; font-size: 24px;" 
-                onmousedown="enviarComando('B')" 
+                onmousedown="enviarComando('X')" 
                 onmouseup="enviarComando('OK')" 
                 onmouseleave="enviarComando('OK')"
-                ontouchstart="event.preventDefault(); enviarComando('B')" 
+                ontouchstart="event.preventDefault(); enviarComando('X')" 
                 ontouchend="event.preventDefault(); enviarComando('OK')">▶</button>
 
         <!-- Abajo -->
